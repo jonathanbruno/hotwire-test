@@ -1,0 +1,48 @@
+FROM ruby:2.7.2
+
+RUN apt-get update -qq && apt-get install -y build-essential \
+  libpq-dev nodejs sqlite3 libsqlite3-dev default-jre
+
+# ENVIRONMENT VARIABLES
+ENV INSTALL_PATH=/app
+
+# SET DIR
+WORKDIR $INSTALL_PATH
+
+# BUNDLE INSTALL
+COPY Gemfile* $INSTALL_PATH/
+
+# INSTALL NODE
+# nvm environment variables
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 10.15.3
+
+# install nvm
+# replace shell with bash so we can source files
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# https://github.com/creationix/nvm#install-script
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh | bash
+
+# install node and npm
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+# add node and npm to path so the commands are available
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+RUN npm install -g yarn
+RUN npm install webpack-dev-server
+
+RUN gem install bundler -v '2.2.0'
+RUN bundle install
+
+RUN yarn install
+RUN yarn install --check-files
+
+COPY . .
+
+EXPOSE 3000

@@ -1,0 +1,10 @@
+<%= turbo_frame_tag 'navigation' do %>
+  <h1>Editing User</h1>
+
+  <%= turbo_frame_tag 'post' do %>
+    <%= render 'form', user: @user %>
+
+    <%= link_to 'Show', @user %> |
+    <%= link_to 'Back', users_path, "data-turbo-frame": "navigation" %>
+  <% end %>
+<% end %>

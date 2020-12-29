@@ -1,0 +1,42 @@
+version: '2'
+services:
+  # rails:
+  #   build:
+  #     context: .
+  #     dockerfile: "Dockerfile.dev"
+  #   command: "bundle exec rails s -p 3000 -b 0.0.0.0"
+  #   env_file:
+  #     - "./.env.dev"
+  #   volumes:
+  #     - ".:/app"
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #     - webpack
+  # webpack:
+  #   build:
+  #     context: .
+  #     dockerfile: "Dockerfile.dev"
+  #   command: "./bin/webpack-dev-server"
+  #   env_file:
+  #     - "./.env.dev"
+  #   volumes:
+  #     - ".:/app"
+  #   ports:
+  #     - "3035:3035"
+  #   depends_on:
+  #     - db
+  db:
+    image: "postgres:11.2"
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=password"
+    env_file:
+      - .env.dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - 'postgres_db_data:/var/lib/postgresql/data:z'
+volumes:
+  postgres_db_data:
